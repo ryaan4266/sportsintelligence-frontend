@@ -17,3 +17,25 @@ body {
 a {
   text-decoration: none;
 }
+
+@keyframes live-event-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.live-event-enter {
+  animation: live-event-enter 240ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-event-enter {
+    animation: none;
+  }
+}

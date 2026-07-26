@@ -59,12 +59,21 @@ export function GameDetail() {
             title={`${game.away_team.abbreviation} at ${game.home_team.abbreviation}`}
             description={formatGameDate(game.game_date)}
             actions={
-              <Link
-                to="/games"
-                className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-              >
-                Back to games
-              </Link>
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  to={`/games/${game.id}/live`}
+                  className="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+                >
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
+                  Open live center
+                </Link>
+                <Link
+                  to="/games"
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                >
+                  Back to games
+                </Link>
+              </div>
             }
           />
 

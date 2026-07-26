@@ -1,5 +1,14 @@
 import apiClient from './client';
-import type { Game, GameDetail, Player, TeamDetail, TeamSummary } from '../types/sports';
+import type {
+  Game,
+  GameAnalytics,
+  GameDetail,
+  Player,
+  PlayerAnalytics,
+  TeamAnalytics,
+  TeamDetail,
+  TeamSummary,
+} from '../types/sports';
 
 export async function getTeams(): Promise<TeamSummary[]> {
   const response = await apiClient.get<TeamSummary[]>('/teams');
@@ -28,5 +37,20 @@ export async function getGames(): Promise<Game[]> {
 
 export async function getGame(gameId: number): Promise<GameDetail> {
   const response = await apiClient.get<GameDetail>(`/games/${gameId}`);
+  return response.data;
+}
+
+export async function getTeamAnalytics(teamId: number): Promise<TeamAnalytics> {
+  const response = await apiClient.get<TeamAnalytics>(`/analytics/teams/${teamId}`);
+  return response.data;
+}
+
+export async function getPlayerAnalytics(playerId: number): Promise<PlayerAnalytics> {
+  const response = await apiClient.get<PlayerAnalytics>(`/analytics/players/${playerId}`);
+  return response.data;
+}
+
+export async function getGameAnalytics(gameId: number): Promise<GameAnalytics> {
+  const response = await apiClient.get<GameAnalytics>(`/analytics/games/${gameId}`);
   return response.data;
 }

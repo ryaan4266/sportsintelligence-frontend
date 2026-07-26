@@ -1,9 +1,13 @@
 import { Link, Navigate, useParams } from 'react-router';
-import { getPlayer } from '../api/sports';
+import { getPlayer, getPlayerAnalytics } from '../api/sports';
+import { AnalyticsGrid } from '../components/analytics/AnalyticsGrid';
+import { PlayerTrendChart } from '../components/analytics/PlayerTrendChart';
+import { StatCard } from '../components/analytics/StatCard';
 import { PageHeader } from '../components/PageHeader';
 import { StatBlock } from '../components/StatBlock';
-import { ErrorState, LoadingState } from '../components/status/RequestStates';
+import { EmptyState, ErrorState, LoadingState } from '../components/status/RequestStates';
 import { useApiResource } from '../hooks/useApiResource';
+import { formatDecimal } from '../utils/formatters';
 
 export function PlayerDetail() {
   const { playerId } = useParams();
@@ -18,6 +22,17 @@ export function PlayerDetail() {
     () =>
       hasValidPlayerId
         ? getPlayer(parsedPlayerId)
+        : Promise.reject(new Error('Invalid player id.')),
+    [hasValidPlayerId, parsedPlayerId],
+  );
+  const {
+    data: analytics,
+    error: analyticsError,
+    isLoading: isAnalyticsLoading,
+  } = useApiResource(
+    () =>
+      hasValidPlayerId
+        ? getPlayerAnalytics(parsedPlayerId)
         : Promise.reject(new Error('Invalid player id.')),
     [hasValidPlayerId, parsedPlayerId],
   );
@@ -67,8 +82,82 @@ export function PlayerDetail() {
               {player.team.division} Division.
             </p>
           </div>
+
+          <div className="mt-12">
+            <div className="mb-5">
+              <p className="text-sm font-semibold uppercase tracking-wide text-cyan-700">
+                Analytics
+              </p>
+              <h2 className="mt-2 text-xl font-semibold text-slate-950">
+                Player Performance
+              </h2>
+            </div>
+            {isAnalyticsLoading ? (
+              <LoadingState label="Loading player analytics..." />
+            ) : null}
+            {analyticsError ? <ErrorState message={analyticsError} /> : null}
+            {!isAnalyticsLoading && !analyticsError && !analytics ? (
+              <EmptyState
+                title="No analytics found"
+                description="Player analytics are not available for this player yet."
+              />
+            ) : null}
+            {!isAnalyticsLoading && !analyticsError && analytics ? (
+              <div className="space-y-6">
+                <AnalyticsGrid columns="four">
+                  <StatCard
+                    label="Points Per Game"
+                    value={formatDecimal(analytics.points_per_game)}
+                  />
+                  <StatCard
+                    label="Rebounds Per Game"
+                    value={formatDecimal(analytics.rebounds_per_game)}
+                  />
+                  <StatCard
+                    label="Assists Per Game"
+                    value={formatDecimal(analytics.assists_per_game)}
+                  />
+                  <StatCard
+                    label="Steals Per Game"
+                    value={formatDecimal(analytics.steals_per_game)}
+                  />
+                  <StatCard
+                    label="Turnovers Per Game"
+                    value={formatDecimal(analytics.turnovers_per_game)}
+                  />
+                </AnalyticsGrid>
+
+                <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="mb-4">
+                    <h3 className="text-base font-semibold text-slate-950">
+                      Recent Five Game Average
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600">
+                      Available recent scoring average across up to five games.
+                    </p>
+                  </div>
+                  <PlayerTrendChart
+                    data={getPlayerTrendData(analytics.recent_five_points_per_game)}
+                  />
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
       ) : null}
     </section>
   );
+}
+
+function getPlayerTrendData(recentFivePointsPerGame: number | null | undefined) {
+  if (typeof recentFivePointsPerGame !== 'number' || !Number.isFinite(recentFivePointsPerGame)) {
+    return [];
+  }
+
+  return [
+    {
+      label: 'Recent 5',
+      points: recentFivePointsPerGame,
+    },
+  ];
 }

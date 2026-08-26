@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAccessToken } from '../utils/authToken';
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8000';
 
@@ -15,7 +16,15 @@ export const apiClient = axios.create({
   },
 });
 
-// Interceptors can be added here as the API surface evolves.
+apiClient.interceptors.request.use((config) => {
+  const accessToken = getAccessToken();
+
+  if (accessToken && !config.headers.has('Authorization')) {
+    config.headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+
+  return config;
+});
 
 export default apiClient;
 

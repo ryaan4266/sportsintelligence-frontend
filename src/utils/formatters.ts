@@ -5,6 +5,12 @@ export function formatGameDate(value: string): string {
   }).format(new Date(value));
 }
 
+export function formatDate(value: string): string {
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'long',
+  }).format(new Date(value));
+}
+
 export function formatGameStatus(status: string): string {
   return status
     .split('_')

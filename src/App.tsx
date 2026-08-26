@@ -1,11 +1,15 @@
 import { Navigate, Route, Routes } from 'react-router';
 import { Navbar } from './components/Navbar';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Account } from './pages/Account';
 import { GameDetail } from './pages/GameDetail';
 import { Games } from './pages/Games';
 import { Home } from './pages/Home';
 import { LiveGamePage } from './pages/LiveGamePage';
+import { Login } from './pages/Login';
 import { PlayerDetail } from './pages/PlayerDetail';
 import { Players } from './pages/Players';
+import { Register } from './pages/Register';
 import { TeamDetail } from './pages/TeamDetail';
 import { Teams } from './pages/Teams';
 
@@ -23,6 +27,11 @@ export function App() {
           <Route path="/games" element={<Games />} />
           <Route path="/games/:gameId/live" element={<LiveGamePage />} />
           <Route path="/games/:gameId" element={<GameDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/account" element={<Account />} />
+          </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

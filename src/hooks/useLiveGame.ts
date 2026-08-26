@@ -10,11 +10,13 @@ import { buildLiveGameWebSocketUrl, parseLiveGameUpdate } from '../utils/liveGam
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8000';
 const MAXIMUM_MOMENTUM_POINTS = 30;
+const MAXIMUM_RECENT_EVENTS = 50;
 
 const initialState: LiveGameState = {
   connectionStatus: 'connecting',
   latestUpdate: null,
   momentumHistory: [],
+  recentEvents: [],
   playerStats: [],
   latestPlayerIds: [],
   error: null,
@@ -154,6 +156,9 @@ export function useLiveGame(
           // Bound the chart data so long-running games do not grow client memory indefinitely.
           momentumHistory: [...currentState.momentumHistory, momentumPoint].slice(
             -MAXIMUM_MOMENTUM_POINTS,
+          ),
+          recentEvents: [...currentState.recentEvents, update.recent_event].slice(
+            -MAXIMUM_RECENT_EVENTS,
           ),
           playerStats: Array.from(playerStatsRef.current.values()),
           latestPlayerIds: update.player_stat_changes.map(

@@ -45,6 +45,7 @@ export interface LiveGameState {
   connectionStatus: LiveConnectionStatus;
   latestUpdate: LiveGameUpdate | null;
   momentumHistory: MomentumPoint[];
+  recentEvents: string[];
   playerStats: LivePlayerStatChange[];
   latestPlayerIds: number[];
   error: string | null;

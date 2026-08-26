@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { getGame, getGameAnalytics } from '../api/sports';
+import { AIGameAnalysisPanel } from '../components/ai/AIGameAnalysisPanel';
 import { AnalyticsGrid } from '../components/analytics/AnalyticsGrid';
 import { StatCard } from '../components/analytics/StatCard';
 import { TeamComparisonChart } from '../components/analytics/TeamComparisonChart';
@@ -14,6 +16,7 @@ import {
   formatScore,
   formatStatValue,
 } from '../utils/formatters';
+import { buildGameDetailAnalysisRequest } from '../utils/gameAnalysis';
 import type { GameDetail } from '../types/sports';
 
 export function GameDetail() {
@@ -31,6 +34,10 @@ export function GameDetail() {
         ? getGame(parsedGameId)
         : Promise.reject(new Error('Invalid game id.')),
     [hasValidGameId, parsedGameId],
+  );
+  const analysisRequest = useMemo(
+    () => (game ? buildGameDetailAnalysisRequest(game) : null),
+    [game],
   );
   const {
     data: analytics,
@@ -227,6 +234,10 @@ export function GameDetail() {
                 </div>
               </div>
             ) : null}
+          </div>
+
+          <div className="mt-12">
+            <AIGameAnalysisPanel key={game.id} request={analysisRequest} />
           </div>
         </div>
       ) : null}

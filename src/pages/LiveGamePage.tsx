@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Link, useParams } from 'react-router';
 import { getGame } from '../api/sports';
+import { AIGameAnalysisPanel } from '../components/ai/AIGameAnalysisPanel';
 import { ConnectionStatus } from '../components/live/ConnectionStatus';
 import { LiveScoreBoard } from '../components/live/LiveScoreBoard';
 import { MomentumChart } from '../components/live/MomentumChart';
@@ -8,6 +10,7 @@ import { RecentPlayCard } from '../components/live/RecentPlayCard';
 import { ErrorState, LoadingState } from '../components/status/RequestStates';
 import { useApiResource } from '../hooks/useApiResource';
 import { useLiveGame } from '../hooks/useLiveGame';
+import { buildLiveGameAnalysisRequest } from '../utils/gameAnalysis';
 
 export function LiveGamePage() {
   const { gameId } = useParams();
@@ -28,6 +31,23 @@ export function LiveGamePage() {
   const liveGame = useLiveGame(safeGameId, {
     enabled: hasValidGameId && Boolean(game) && !gameError,
   });
+  const analysisRequest = useMemo(
+    () =>
+      game
+        ? buildLiveGameAnalysisRequest(
+            game,
+            liveGame.latestUpdate,
+            liveGame.playerStats,
+            liveGame.recentEvents,
+          )
+        : null,
+    [
+      game,
+      liveGame.latestUpdate,
+      liveGame.playerStats,
+      liveGame.recentEvents,
+    ],
+  );
 
   if (!hasValidGameId) {
     return (
@@ -129,6 +149,10 @@ export function LiveGamePage() {
           homeTeamLabel={game.home_team.abbreviation}
           awayTeamLabel={game.away_team.abbreviation}
         />
+      </div>
+
+      <div className="mt-6">
+        <AIGameAnalysisPanel key={game.id} request={analysisRequest} />
       </div>
     </DashboardShell>
   );

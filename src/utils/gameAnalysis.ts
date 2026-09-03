@@ -90,7 +90,10 @@ function buildAnalysisRequest(
 
 function createGameDetailSnapshots(game: GameDetail): PlayerStatSnapshot[] {
   return game.player_stats.flatMap((stat) => {
-    const team = getTeamById(game, stat.player.team_id);
+    const team = getTeamById(
+      game,
+      resolvePlayerStatTeamId(stat.team_id, stat.player.team_id),
+    );
     if (!team) return [];
 
     const minutes = Number(stat.minutes);
@@ -150,7 +153,27 @@ function sum(
   return players.reduce((total, player) => total + player[field], 0);
 }
 
-function getTeamById(game: GameDetail, teamId: number): TeamSummary | null {
+export function resolvePlayerStatTeamId(
+  statTeamId: number | null,
+  currentPlayerTeamId: number | null,
+): number | null {
+  return statTeamId ?? currentPlayerTeamId;
+}
+
+export function getGameTeamAbbreviation(
+  teamId: number | null,
+  game: GameDetail,
+): string {
+  if (teamId === null) return 'No team';
+  if (teamId === game.home_team.id) return game.home_team.abbreviation;
+  if (teamId === game.away_team.id) return game.away_team.abbreviation;
+  return 'Team';
+}
+
+function getTeamById(
+  game: GameDetail,
+  teamId: number | null,
+): TeamSummary | null {
   if (teamId === game.home_team.id) return game.home_team;
   if (teamId === game.away_team.id) return game.away_team;
   return null;

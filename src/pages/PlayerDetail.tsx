@@ -8,6 +8,7 @@ import { StatBlock } from '../components/StatBlock';
 import { EmptyState, ErrorState, LoadingState } from '../components/status/RequestStates';
 import { useApiResource } from '../hooks/useApiResource';
 import { formatDecimal } from '../utils/formatters';
+import { getPlayerProfilePresentation } from '../utils/playerPresentation';
 
 export function PlayerDetail() {
   const { playerId } = useParams();
@@ -48,9 +49,9 @@ export function PlayerDetail() {
       {!isLoading && !error && player ? (
         <div>
           <PageHeader
-            eyebrow={`${player.position} · #${player.jersey_number}`}
+            eyebrow={getPlayerProfilePresentation(player).eyebrow}
             title={`${player.first_name} ${player.last_name}`}
-            description={`${player.team.city} ${player.team.name} · ${player.team.conference} Conference`}
+            description={getPlayerProfilePresentation(player).description}
             actions={
               <Link
                 to="/players"
@@ -63,23 +64,41 @@ export function PlayerDetail() {
 
           <dl className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatBlock label="Position" value={player.position} />
-            <StatBlock label="Jersey" value={`#${player.jersey_number}`} />
-            <StatBlock label="Team" value={player.team.abbreviation} />
-            <StatBlock label="Division" value={player.team.division} />
+            <StatBlock
+              label="Jersey"
+              value={getPlayerProfilePresentation(player).jersey}
+            />
+            <StatBlock
+              label="Team"
+              value={getPlayerProfilePresentation(player).teamAbbreviation}
+            />
+            <StatBlock
+              label="Division"
+              value={getPlayerProfilePresentation(player).division}
+            />
           </dl>
 
           <div className="mt-12 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-slate-950">Team Context</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              {player.first_name} {player.last_name} plays for the{' '}
-              <Link
-                to={`/teams/${player.team.id}`}
-                className="font-semibold text-cyan-700 hover:text-cyan-800"
-              >
-                {player.team.city} {player.team.name}
-              </Link>
-              , competing in the {player.team.conference} Conference and{' '}
-              {player.team.division} Division.
+              {player.team ? (
+                <>
+                  {player.first_name} {player.last_name} plays for the{' '}
+                  <Link
+                    to={`/teams/${player.team.id}`}
+                    className="font-semibold text-cyan-700 hover:text-cyan-800"
+                  >
+                    {player.team.city} {player.team.name}
+                  </Link>
+                  , competing in the {player.team.conference} Conference and{' '}
+                  {player.team.division} Division.
+                </>
+              ) : (
+                <>
+                  {player.first_name} {player.last_name} is a free agent with no
+                  current team assignment.
+                </>
+              )}
             </p>
           </div>
 

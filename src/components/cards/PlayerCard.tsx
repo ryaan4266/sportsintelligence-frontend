@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import type { Player, PlayerSummary, TeamSummary } from '../../types/sports';
+import { formatJerseyNumber } from '../../utils/playerPresentation';
 
 interface PlayerCardProps {
   player: Player | PlayerSummary;
@@ -17,7 +18,7 @@ export function PlayerCard({ player, team }: PlayerCardProps) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-cyan-700">
-            #{player.jersey_number} · {player.position}
+            {formatJerseyNumber(player.jersey_number)} · {player.position}
           </p>
           <h2 className="mt-2 text-xl font-semibold text-slate-950">
             {player.first_name} {player.last_name}
@@ -33,7 +34,9 @@ export function PlayerCard({ player, team }: PlayerCardProps) {
         <p className="mt-4 text-sm text-slate-600">
           {resolvedTeam.city} {resolvedTeam.name}
         </p>
-      ) : null}
+      ) : (
+        <p className="mt-4 text-sm text-slate-600">Free Agent</p>
+      )}
     </Link>
   );
 }

@@ -12,12 +12,12 @@ export interface PlayerSummary {
   first_name: string;
   last_name: string;
   position: string;
-  jersey_number: number;
-  team_id: number;
+  jersey_number: number | null;
+  team_id: number | null;
 }
 
 export interface Player extends PlayerSummary {
-  team: TeamSummary;
+  team: TeamSummary | null;
 }
 
 export interface TeamDetail extends TeamSummary {
@@ -40,6 +40,7 @@ export interface PlayerGameStat {
   id: number;
   player_id: number;
   game_id: number;
+  team_id: number | null;
   points: number;
   rebounds: number;
   assists: number;
@@ -81,7 +82,7 @@ export type StatCategory = 'points' | 'rebounds' | 'assists' | 'steals' | 'block
 export interface PlayerAnalyticsLeader {
   player_id: number;
   player_name: string;
-  team_id: number;
+  team_id: number | null;
 }
 
 export interface PlayerStatLeader extends PlayerAnalyticsLeader {

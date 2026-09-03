@@ -16,7 +16,10 @@ import {
   formatScore,
   formatStatValue,
 } from '../utils/formatters';
-import { buildGameDetailAnalysisRequest } from '../utils/gameAnalysis';
+import {
+  buildGameDetailAnalysisRequest,
+  getGameTeamAbbreviation,
+} from '../utils/gameAnalysis';
 import type { GameDetail } from '../types/sports';
 
 export function GameDetail() {
@@ -188,7 +191,7 @@ export function GameDetail() {
                     value={analytics.top_scorer?.player_name ?? '-'}
                     helperText={
                       analytics.top_scorer
-                        ? `${getTeamAbbreviation(
+                        ? `${getGameTeamAbbreviation(
                             analytics.top_scorer.team_id,
                             game,
                           )} · ${analytics.top_scorer.value} ${analytics.top_scorer.category}`
@@ -243,18 +246,6 @@ export function GameDetail() {
       ) : null}
     </section>
   );
-}
-
-function getTeamAbbreviation(teamId: number, game: GameDetail) {
-  if (teamId === game.home_team.id) {
-    return game.home_team.abbreviation;
-  }
-
-  if (teamId === game.away_team.id) {
-    return game.away_team.abbreviation;
-  }
-
-  return 'Team';
 }
 
 function formatStatCategory(category: string | null | undefined): string {
